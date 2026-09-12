@@ -8,14 +8,16 @@ use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\MeetupGroup;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 
 
 class EvenController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $events = Event::query()
         ->with('meetupGroup.user')
@@ -24,23 +26,30 @@ class EvenController extends Controller
         ->get();
 
         return Inertia::render('events/index', [
-            'events' => $events
+            'events' => $events,
+            'can' => [
+                'create' => $request->user()?->can('create', Event::class) ?? false
+            ]
         ]);
 
     }
 
-    public function show(Event $event): Response
+    public function show(Request $request, Event $event): Response
     {
         $event->load('meetupGroup.user');
 
         return Inertia::render('events/show', [
-            'event' => $event
+            'event' => $event,
+            'can' => [
+                'update' => $request->user()?->can('update', $event) ?? false,
+                'delete' => $request->user()?->can('delete', $event) ?? false,
+            ]
         ]);
     }
 
     public function create(): Response
     {
-        $meetupGroups = MeetupGroup::query()
+        $meetupGroups = Auth::user()->meetupGroups()
             ->orderBy('name')
             ->get(['id', 'name']);
 
@@ -61,11 +70,13 @@ class EvenController extends Controller
 
     public function edit(Event $event): Response
     {
+        Gate::authorize('update', $event);
         return Inertia::render('events/edit', ['event' => $event]);
     }
 
     public function update(UpdateEventRequest $request, Event $event): RedirectResponse
     {
+        Gate::authorize('update', $event);
         $validated = $request->validated();
         $event->update($validated);
 

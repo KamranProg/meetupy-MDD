@@ -1,17 +1,30 @@
-import { Head } from '@inertiajs/react';
-import { index, show } from '@/routes/events';
-import type { Event } from '@/types';
+import { Head, Link } from "@inertiajs/react";
+import { index, show, edit } from "@/routes/events";
+import type { Event } from "@/types";
 
 interface Props {
     event: Event;
+    can: {
+        update: boolean;
+        delete: boolean;
+    };
 }
 
-export default function EventShow({ event }: Props) {
+export default function EventShow({ event, can }: Props) {
     return (
         <>
             <Head title={event.title} />
 
-            <div className="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border">
+            {can.update && (
+                <Link
+                    href={edit.url(event)}
+                    className="text-sm text-muted-foreground"
+                >
+                    Edit Event
+                </Link>
+            )}
+
+            <div className="mt-4 rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border">
                 <h1 className="text-2xl font-semibold">{event.title}</h1>
 
                 {event.meetup_group && (
@@ -23,14 +36,14 @@ export default function EventShow({ event }: Props) {
                 <div className="mt-4 space-y-2 text-sm text-muted-foreground">
                     <p>
                         {new Date(event.starts_at).toLocaleString(undefined, {
-                            timeZone: 'UTC',
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                        })}{' '}
+                            timeZone: "UTC",
+                            weekday: "long",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        })}{" "}
                         UTC
                     </p>
 
@@ -47,7 +60,7 @@ export default function EventShow({ event }: Props) {
 
 EventShow.layout = ({ event }: { event: Event }) => ({
     breadcrumbs: [
-        { title: 'Upcoming Events', href: index.url() },
+        { title: "Upcoming Events", href: index.url() },
         { title: event.title, href: show.url(event) },
     ],
 });
