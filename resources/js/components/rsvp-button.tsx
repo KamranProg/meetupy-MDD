@@ -1,6 +1,6 @@
-import { Link, usePage } from '@inertiajs/react';
-import { destroy, store } from '@/actions/App/Http/Controllers/RsvpController';
-import type { Event } from '@/types';
+import { Link, usePage } from "@inertiajs/react";
+import { destroy, store } from "@/actions/App/Http/Controllers/RsvpController";
+import type { Event } from "@/types";
 
 interface Props {
     event: Event;
@@ -12,8 +12,8 @@ export default function RsvpButton({ event, isRsvped }: Props) {
 
     return (
         <>
-            {auth.user && (
-                isRsvped ? (
+            {auth.user &&
+                (isRsvped ? (
                     <Link href={destroy.url(event)} method="delete" as="button">
                         Cancel
                     </Link>
@@ -21,8 +21,7 @@ export default function RsvpButton({ event, isRsvped }: Props) {
                     <Link href={store.url(event)} method="post" as="button">
                         RSVP
                     </Link>
-                )
-            )}
+                ))}
         </>
     );
 }

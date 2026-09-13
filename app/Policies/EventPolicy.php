@@ -63,4 +63,15 @@ class EventPolicy
     {
         return false;
     }
+
+    /**
+     * Determine whether the user can RSVP to the event.
+     */
+    public function rsvp(User $user, Event $event): bool
+    {
+        // Check if the user is already attached to this event's users relationship
+        return $event->users()
+            ->where('user_id', $user->id)
+            ->exists();
+    }
 }

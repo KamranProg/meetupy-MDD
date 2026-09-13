@@ -43,7 +43,9 @@ class EvenController extends Controller
             'can' => [
                 'update' => $request->user()?->can('update', $event) ?? false,
                 'delete' => $request->user()?->can('delete', $event) ?? false,
-            ]
+                'rsvp'   => $request->user()?->can('rsvp', $event) ?? false,
+            ],
+            'attendeeCount' => $event->users()->count(),
         ]);
     }
 
